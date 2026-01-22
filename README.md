@@ -1,16 +1,10 @@
-# med-z8 CCOW Context Vault
+# med-z2 CCOW Vault Service
 
 **Enterprise Patient Context Synchronization Service**
 
-> A standalone CCOW (Clinical Context Object Workgroup) service providing patient context synchronization across multiple clinical applications in the VA healthcare ecosystem, with Keycloak-based Single Sign-On (SSO) authentication.
+A standalone CCOW (Clinical Context Object Workgroup) service providing patient context synchronization across multiple clinical applications in the VA healthcare ecosystem, with Keycloak-based Single Sign-On (SSO) authentication.
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
-[![FastAPI](https://img.shields.io/badge/FastAPI-0.108+-green.svg)](https://fastapi.tiangolo.com/)
-
----
-
-## 📋 Table of Contents
+## Table of Contents
 
 - [Overview](#overview)
 - [Problem Statement](#problem-statement)
@@ -32,27 +26,27 @@
 
 ## Overview
 
-**med-z8** is a lightweight, production-ready **CCOW Context Vault** service that enables **patient context synchronization** across multiple clinical applications. When a clinician selects a patient in one application (e.g., med-z1 longitudinal viewer), all other integrated applications automatically display the same patient context—creating a seamless, unified clinical workflow.
+**med-z2** is a lightweight, production-ready **CCOW Context Vault** service that enables **patient context synchronization** across multiple clinical applications. When a clinician selects a patient in one application (e.g., med-z1 longitudinal viewer), all other integrated applications automatically display the same patient context—creating a seamless, unified clinical workflow.
 
 ### What is CCOW?
 
-CCOW (Clinical Context Object Workgroup) is an HL7 standard for synchronizing clinical context (such as the active patient) across multiple healthcare applications. med-z8 implements a **simplified, RESTful CCOW pattern** optimized for modern web applications.
+CCOW (Clinical Context Object Workgroup) is an HL7 standard for synchronizing clinical context (such as the active patient) across multiple healthcare applications. med-z2 implements a **simplified, RESTful CCOW pattern** optimized for modern web applications.
 
-### Why med-z8?
+### Why med-z2?
 
-Traditional CCOW implementations are complex, proprietary, and tightly coupled to specific vendor ecosystems. med-z8 provides:
+Traditional CCOW implementations are complex, proprietary, and tightly coupled to specific vendor ecosystems. med-z2 provides:
 
-- ✅ **Modern REST API** instead of legacy SOAP/COM protocols
-- ✅ **Stateless JWT authentication** instead of session databases
-- ✅ **Microservice architecture** instead of monolithic coupling
-- ✅ **Open-source Keycloak** instead of proprietary identity providers
-- ✅ **Container-native** design for cloud deployment
+- **Modern REST API** instead of legacy SOAP/COM protocols
+- **Stateless JWT authentication** instead of session databases
+- **Microservice architecture** instead of monolithic coupling
+- **Open-source Keycloak** instead of proprietary identity providers
+- **Container-native** design for cloud deployment
 
 ---
 
 ## Problem Statement
 
-**Before med-z8**, clinical applications at the VA operated in silos:
+**Before med-z2**, clinical applications at the VA operated in silos:
 
 | Problem | Impact |
 |---------|--------|
@@ -61,7 +55,7 @@ Traditional CCOW implementations are complex, proprietary, and tightly coupled t
 | **Vendor Lock-In** | Each app has custom authentication → integration nightmare |
 | **Scalability Issues** | Session databases become bottlenecks at scale |
 
-**With med-z8**, clinical applications share context and identity:
+**With med-z2**, clinical applications share context and identity:
 
 | Solution | Benefit |
 |----------|---------|
@@ -110,33 +104,33 @@ Traditional CCOW implementations are complex, proprietary, and tightly coupled t
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                  VA Healthcare Ecosystem                     │
-│                                                              │
-│  ┌────────────────────────────────────────────────────┐    │
-│  │      Keycloak Identity Provider (Port 8080)        │    │
-│  │  Realm: va-development                             │    │
-│  │  Issues: JWT Access Tokens (15 min expiration)     │    │
-│  └──────────────────┬─────────────────────────────────┘    │
-│                     │                                        │
-│        ┌────────────┼────────────┬──────────────┐          │
-│        │ OIDC       │ OIDC       │ OIDC         │          │
-│        ▼            ▼            ▼              ▼          │
-│   ┌────────┐  ┌────────┐  ┌─────────┐  ┌──────────┐      │
-│   │med-z1  │  │ CPRS   │  │ Imaging │  │Future app│      │
-│   │(8000)  │  │(8002)  │  │ (8004)  │  │          │      │
-│   └───┬────┘  └───┬────┘  └────┬────┘  └────┬─────┘      │
-│       │ JWT       │ JWT        │ JWT        │ JWT         │
-│       └───────────┼────────────┼────────────┘             │
+│                  VA Healthcare Ecosystem                    │
+│                                                             │
+│  ┌────────────────────────────────────────────────────┐     │
+│  │      Keycloak Identity Provider (Port 8080)        │     │
+│  │  Realm: va-development                             │     │
+│  │  Issues: JWT Access Tokens (15 min expiration)     │     │
+│  └──────────────────┬─────────────────────────────────┘     │
+│                     │                                       │
+│        ┌────────────┼────────────┬──────────────┐           │
+│        │ OIDC       │ OIDC       │ OIDC         │           │
+│        ▼            ▼            ▼              ▼           │
+│   ┌────────┐  ┌────────┐  ┌─────────┐  ┌──────────┐         │
+│   │med-z1  │  │ CPRS   │  │ Imaging │  │Future app│         │
+│   │(8000)  │  │(8002)  │  │ (8004)  │  │          │         │
+│   └───┬────┘  └───┬────┘  └────┬────┘  └────┬─────┘         │
+│       │ JWT       │ JWT        │ JWT        │ JWT           │
+│       └───────────┼────────────┼────────────┘               │
 │                   ▼                                         │
-│           ┌──────────────────┐                             │
-│           │   med-z8 CCOW    │                             │
-│           │ Context Vault    │                             │
-│           │   (Port 8001)    │                             │
-│           │                  │                             │
-│           │ ✅ Stateless     │                             │
-│           │ ✅ JWT-based     │                             │
-│           │ ✅ Multi-user    │                             │
-│           └──────────────────┘                             │
+│           ┌──────────────────┐                              │
+│           │   med-z2 CCOW    │                              │
+│           │ Context Vault    │                              │
+│           │   (Port 8001)    │                              │
+│           │                  │                              │
+│           │  - Stateless     │                              │
+│           │  - JWT-based     │                              │
+│           │  - Multi-user    │                              │
+│           └──────────────────┘                              │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -206,24 +200,24 @@ Traditional CCOW implementations are complex, proprietary, and tightly coupled t
 ### 1. Clone Repository
 
 ```bash
-git clone https://github.com/va-healthcare/med-z8.git
-cd med-z8
+git clone https://github.com/va-healthcare/med-z2.git
+cd med-z2
 ```
 
 ### 2. Start Services
 
 ```bash
-# Start Keycloak + med-z8 + optional dependencies
+# Start Keycloak + med-z2 + optional dependencies
 docker-compose up -d
 
 # Check logs
-docker-compose logs -f med-z8-ccow
+docker-compose logs -f med-z2-ccow
 ```
 
 Services will start on:
 - **Keycloak**: http://localhost:8080 (admin/admin)
-- **med-z8 CCOW**: http://localhost:8001
-- **med-z8 API Docs**: http://localhost:8001/docs
+- **med-z2 CCOW**: http://localhost:8001
+- **med-z2 API Docs**: http://localhost:8001/docs
 
 ### 3. Configure Keycloak
 
@@ -235,7 +229,7 @@ python scripts/setup_keycloak.py
 Or manually:
 1. Visit http://localhost:8080/admin (admin/admin)
 2. Create realm: `va-development`
-3. Create client: `med-z8-ccow` (bearer-only)
+3. Create client: `med-z2-ccow` (bearer-only)
 4. Create users: `clinician.alpha@va.gov`, `clinician.bravo@va.gov`
 
 ### 4. Test API
@@ -258,7 +252,7 @@ Visit **http://localhost:8001/docs** for interactive Swagger UI
 ## Project Structure
 
 ```
-med-z8/
+med-z2/
 ├── ccow/                           # Core application
 │   ├── __init__.py
 │   ├── main.py                     # FastAPI application
@@ -289,7 +283,7 @@ med-z8/
 ├── README.md                       # This file
 └── docs/
     ├── spec/
-    │   └── med-z8-ccow-service-design.md  # Full design specification
+    │   └── med-z2-ccow-service-design.md  # Full design specification
     ├── architecture.md             # Architecture decisions (ADRs)
     └── api.md                      # API reference
 ```
@@ -312,7 +306,7 @@ Key configuration variables:
 # Keycloak Configuration
 KEYCLOAK_SERVER_URL=http://localhost:8080
 KEYCLOAK_REALM=va-development
-KEYCLOAK_CLIENT_ID=med-z8-ccow
+KEYCLOAK_CLIENT_ID=med-z2-ccow
 
 # Application Settings
 LOG_LEVEL=INFO
@@ -429,13 +423,13 @@ open http://localhost:8001/docs
 
 ```bash
 # Build image
-docker build -t med-z8-ccow:latest .
+docker build -t med-z2-ccow:latest .
 
 # Run container
 docker run -p 8001:8001 \
   -e KEYCLOAK_SERVER_URL=https://keycloak.va.gov \
   -e KEYCLOAK_REALM=va-production \
-  med-z8-ccow:latest
+  med-z2-ccow:latest
 ```
 
 ### Docker Compose (Development)
@@ -451,8 +445,8 @@ docker-compose up -d
 kubectl apply -f k8s/
 
 # Check deployment
-kubectl get pods -l app=med-z8-ccow
-kubectl logs -f deployment/med-z8-ccow
+kubectl get pods -l app=med-z2-ccow
+kubectl logs -f deployment/med-z2-ccow
 ```
 
 See `docs/deployment.md` for detailed production deployment guide.
@@ -515,7 +509,7 @@ See `docs/api.md` for complete API reference.
 | Project | Repository | Description |
 |---------|------------|-------------|
 | **med-z1** | [va-healthcare/med-z1](https://github.com/va-healthcare/med-z1) | Longitudinal Health Record Viewer |
-| **med-z8** | [va-healthcare/med-z8](https://github.com/va-healthcare/med-z8) | CCOW Context Vault (this project) |
+| **med-z2** | [va-healthcare/med-z2](https://github.com/va-healthcare/med-z2) | CCOW Context Vault (this project) |
 | **med-z2** | (Future) | CPRS Simulator |
 | **med-z3** | (Future) | Imaging Viewer |
 
@@ -571,15 +565,15 @@ This project is licensed under the **MIT License** - see [LICENSE](LICENSE) file
 
 ### Documentation
 
-- **Design Specification**: [docs/spec/med-z8-ccow-service-design.md](docs/spec/med-z8-ccow-service-design.md)
+- **Design Specification**: [docs/spec/med-z2-ccow-service-design.md](docs/spec/med-z2-ccow-service-design.md)
 - **Architecture Decisions**: [docs/architecture.md](docs/architecture.md)
 - **API Reference**: [docs/api.md](docs/api.md)
 
 ### Getting Help
 
-- **Issues**: [GitHub Issues](https://github.com/va-healthcare/med-z8/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/va-healthcare/med-z8/discussions)
-- **Email**: med-z8-support@va.gov
+- **Issues**: [GitHub Issues](https://github.com/va-healthcare/med-z2/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/va-healthcare/med-z2/discussions)
+- **Email**: med-z2-support@va.gov
 
 ### Reporting Security Issues
 
@@ -625,14 +619,9 @@ Please report security vulnerabilities to **security@va.gov** (do not use public
 
 ## Quick Links
 
-- 📖 [Full Design Specification](docs/spec/med-z8-ccow-service-design.md)
+- 📖 [Full Design Specification](docs/spec/med-z2-ccow-service-design.md)
 - 🔐 [Keycloak Setup Guide](docs/guide/keycloak-setup.md) (TBD)
 - 🏥 [med-z1 Migration Guide](https://github.com/va-healthcare/med-z1/docs/spec/med-z1-keycloak-migration.md)
 - 📋 [API Documentation](http://localhost:8001/docs) (when running)
-- 🐛 [Issue Tracker](https://github.com/va-healthcare/med-z8/issues)
+- 🐛 [Issue Tracker](https://github.com/va-healthcare/med-z2/issues)
 
----
-
-**Built with ❤️ by the VA Healthcare Technology Team**
-
-*For questions or support, contact: med-z8-support@va.gov*
